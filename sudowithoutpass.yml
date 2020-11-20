@@ -1,0 +1,26 @@
+- hosts: servers
+  become: true
+  tasks: 
+
+    - name: create user ansible
+      user:
+        name: ansible
+        comment: usuario para comandos ansible
+        shell: /bin/bash
+        groups: wheel
+
+    - name: Set authorized key in alternate location
+      authorized_key:
+        user: ansible
+        state: present
+        key: "{{ lookup('file', '/home/ansible/.ssh/id_rsa.pub') }}"
+        path: /keys/authorized_keys/ansible
+        manage_dir: False
+
+    - name: Validate the sudoers file before saving
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%root ALL='
+        line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+        validate: /usr/sbin/visudo -cf %s

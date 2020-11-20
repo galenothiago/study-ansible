@@ -1,0 +1,4 @@
+[servers_testing]
+
+192.168.1.14 #servidor de aplicacao web
+192.168.1.15 #banco de dados

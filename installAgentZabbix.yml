@@ -1,0 +1,28 @@
+- hosts: servers
+  become: true
+  tasks:
+
+    - name: install zabbix agent
+      yum:
+        name: zabbix-agent
+        state: present
+
+    - name: Change line for ip serves zabbix
+      lineinfile: 
+        path: /etc/zabbix/zabbix_agentd.conf 
+        regexp: '^ServerActive=127.0.0.1'
+        line: 'ServerActive=127.0.0.1, 192.168.1.254:8000'
+      notify: restart agent zabbix
+
+    # - name: substituindo arquivo zabbix
+    #   template: 
+    #     src: /srv/zabbix_agent.conf
+    #     dest: /etc/zabbix_agent.conf
+    #   notify:
+    #   - restart agent zabbix
+
+    - handlers:
+        - name: restart agent zabbix
+          service:
+            name: zabbix-agent
+            state: restarted
